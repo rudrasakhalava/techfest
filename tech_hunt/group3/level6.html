@@ -1,135 +1,424 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        #container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f0f0f0;
-        }
+    body, html {
+      width: 100%;
+      height: 100%;
+      font-family: 'Arial', sans-serif;
+    }
 
-        #dragElement {
-            position: absolute;
-            width: 300px;
-            height: 200px;
-            cursor: grab;
-            user-select: none;
-            background: url('g3img.png') no-repeat center center;
-            background-size: cover;
-            transition: all 0.2s ease; /* Smooth transition for position */
-        }
+    #container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      overflow: hidden;
+      touch-action: none; /* Prevent default touch behaviors */
+    }
 
-        #hiddenText {
-            position: absolute;
-            top: 450px;
-            left: 750px;
-            display: none;
-            font-size: 20px;
-            font-weight: bold;
-            color: #007bff;
-            z-index: 1;
-        }
+    #dragElement {
+      position: absolute;
+      width: 35vw;
+      max-width: 280px;
+      min-width: 120px;
+      height: auto;
+      aspect-ratio: 3 / 2;
+      cursor: grab;
+      user-select: none;
+      background: url('g3img.png') no-repeat center center;
+      background-size: cover;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      will-change: left, top, transform;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+    }
 
-        /* Mobile responsiveness */
-        @media screen and (max-width: 600px) {
-            #dragElement {
-                width: 150px;
-                height: 120px;
-            }
+    #dragElement:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+    }
 
-            #hiddenText {
-                font-size: 16px;
-            }
-        }
+    #dragElement:active {
+      cursor: grabbing;
+      transform: scale(0.95);
+    }
 
-    </style>
+    #hiddenText {
+      position: absolute;
+      bottom: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      text-align: center;
+      font-size: clamp(14px, 3vw, 20px);
+      font-weight: bold;
+      color: #ffffff;
+      z-index: 10;
+      padding: clamp(8px, 2vw, 15px);
+      max-width: 85%;
+      background: rgba(0, 123, 255, 0.9);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      animation: fadeIn 0.3s ease-in-out;
+      line-height: 1.4;
+    }
+
+    /* Invisible trigger zone at top-left */
+    #triggerZone {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 22%;
+      height: 22%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #hiddenText > div {
+      margin: 5px 0;
+    }
+
+    #hiddenText > div:last-child {
+      font-size: clamp(16px, 3.5vw, 22px);
+      color: #ffeb3b;
+      font-weight: 900;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* Instructions for mobile users */
+    #instructions {
+      position: absolute;
+      top: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      text-align: center;
+      font-size: clamp(12px, 2.5vw, 16px);
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 20px;
+      border-radius: 8px;
+      backdrop-filter: blur(5px);
+      z-index: 5;
+    }
+
+    /* Large screens */
+    @media screen and (min-width: 1200px) {
+      #dragElement {
+        width: 25vw;
+        max-width: 350px;
+      }
+    }
+
+    /* Tablet adjustments */
+    @media screen and (max-width: 900px) {
+      #dragElement {
+        width: 45vw;
+        max-width: 250px;
+      }
+      
+      #hiddenText {
+        bottom: 10%;
+        max-width: 90%;
+      }
+    }
+
+    /* Mobile adjustments */
+    @media screen and (max-width: 600px) {
+      #container {
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height for mobile */
+      }
+      
+      #dragElement {
+        width: 65vw;
+        max-width: 200px;
+        min-width: 150px;
+      }
+      
+      #hiddenText {
+        bottom: 12%;
+        max-width: 95%;
+        padding: 12px 16px;
+      }
+      
+      #instructions {
+        top: 3%;
+        max-width: 90%;
+      }
+    }
+
+    /* Very small screens */
+    @media screen and (max-width: 400px) {
+      #dragElement {
+        width: 75vw;
+        min-width: 140px;
+      }
+      
+      #hiddenText {
+        bottom: 15%;
+      }
+    }
+
+    /* Landscape mobile orientation */
+    @media screen and (max-height: 500px) and (orientation: landscape) {
+      #hiddenText {
+        bottom: 5%;
+        font-size: clamp(12px, 2.5vw, 16px);
+      }
+      
+      #instructions {
+        top: 2%;
+        font-size: clamp(10px, 2vw, 14px);
+      }
+      
+      #dragElement {
+        width: 40vw;
+        max-width: 180px;
+      }
+    }
+
+    /* High DPI displays */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+      #dragElement {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+      }
+    }
+
+    /* Accessibility improvements */
+    @media (prefers-reduced-motion: reduce) {
+      #dragElement {
+        transition: none;
+      }
+      
+      #hiddenText {
+        animation: none;
+      }
+    }
+
+    /* Focus styles for accessibility */
+    #dragElement:focus {
+      outline: 3px solid #ffeb3b;
+      outline-offset: 4px;
+    }
+  </style>
 </head>
 <body>
 
 <div id="container">
-    <div id="dragElement"></div>
-    <div id="hiddenText">Jit Gaya Bhai! You Earn My Respect,
-        <div>JA ABHI BADMINTON COURT PAR JAKE NICHE WALA NAM BOL K PHATKE PHOD...</div>
-        <div>your finale word is "KACHARA SETH"</div>
-    </div>
+  <div id="instructions">
+    NOTE :: your final word/sentence is not the text that written in the image,you have to find it out.
+  </div>
+  <div id="triggerZone" aria-hidden="true"></div>
+  <div id="dragElement" tabindex="0" role="button" aria-label="Draggable image element"></div>
+  <div id="hiddenText" role="alert" aria-live="polite">
+    Jit Gaya Bhai! You Earn My Respect,
+    <div>JA ABHI BADMINTON COURT PAR JAKE NICHE WALA NAM BOL K PHATKE PHOD...</div>
+    <div>your finale word is "CHAGAN CHATRI"</div>
+  </div>
 </div>
 
 <script>
-    let dragElement = document.getElementById('dragElement');
-    let hiddenText = document.getElementById('hiddenText');
-    let isDragging = false;
-    let originalPosition = { x: 0, y: 0 }; // Start at the center of the screen
+  let dragElement = document.getElementById('dragElement');
+  let hiddenText = document.getElementById('hiddenText');
+  let triggerZone = document.getElementById('triggerZone');
+  let isDragging = false;
+  let offsetX, offsetY;
+  let originalPosition = { x: 0, y: 0 };
 
-    // Center the image on page load
-    window.onload = () => {
+  // Center image on load
+  function centerImage() {
+    const container = document.getElementById('container');
+    const containerRect = container.getBoundingClientRect();
+    const centerX = containerRect.width / 2 - dragElement.offsetWidth / 2;
+    const centerY = containerRect.height / 2 - dragElement.offsetHeight / 2;
+    dragElement.style.left = centerX + 'px';
+    dragElement.style.top = centerY + 'px';
+    originalPosition = { x: centerX, y: centerY };
+  }
+
+  // Debounced resize handler for better performance
+  let resizeTimeout;
+  function handleResize() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(centerImage, 100);
+  }
+
+  window.onload = centerImage;
+  window.addEventListener('resize', handleResize);
+
+  // Mouse events
+  dragElement.addEventListener('mousedown', (e) => {
+    if (e.button === 0) {
+      e.preventDefault();
+      startDragging(e.clientX, e.clientY);
+    }
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      drag(e.clientX, e.clientY);
+    }
+  });
+
+  document.addEventListener('mouseup', stopDragging);
+
+  // Touch events for mobile
+  dragElement.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    startDragging(touch.clientX, touch.clientY);
+  }, { passive: false });
+
+  document.addEventListener('touchmove', (e) => {
+    if (isDragging) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      drag(touch.clientX, touch.clientY);
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    stopDragging();
+  }, { passive: false });
+
+  // Keyboard accessibility
+  dragElement.addEventListener('keydown', (e) => {
+    const step = 20;
+    let newX = parseInt(dragElement.style.left) || originalPosition.x;
+    let newY = parseInt(dragElement.style.top) || originalPosition.y;
+    
+    switch(e.key) {
+      case 'ArrowLeft':
+        newX -= step;
+        break;
+      case 'ArrowRight':
+        newX += step;
+        break;
+      case 'ArrowUp':
+        newY -= step;
+        break;
+      case 'ArrowDown':
+        newY += step;
+        break;
+      case 'Enter':
+      case ' ':
+        // Toggle between center and a position that reveals text
         const container = document.getElementById('container');
         const containerRect = container.getBoundingClientRect();
-        const centerX = containerRect.width / 2 - dragElement.offsetWidth / 2;
-        const centerY = containerRect.height / 2 - dragElement.offsetHeight / 2;
-
-        dragElement.style.left = centerX + 'px';
-        dragElement.style.top = centerY + 'px';
-
-        originalPosition = { x: centerX, y: centerY };
-    };
-
-    dragElement.addEventListener('mousedown', (e) => {
-        if (e.button === 0) { // Check if the left mouse button is pressed
-            isDragging = true;
-            dragElement.style.cursor = 'grabbing'; // Change cursor while dragging
-        }
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            dragElement.style.left = e.clientX - dragElement.clientWidth / 2 + 'px';
-            dragElement.style.top = e.clientY - dragElement.clientHeight / 2 + 'px';
-
-            // Check if the dragElement overlaps with the hiddenText
-            if (isOverlapping(dragElement, hiddenText)) {
-                hiddenText.style.display = 'block'; // Show clue message
-            } else {
-                hiddenText.style.display = 'none'; // Hide clue message
-            }
-        }
-    });
-
-    document.addEventListener('mouseup', () => {
-        if (isDragging) {
-            isDragging = false;
-            dragElement.style.cursor = 'grab'; // Reset cursor after dragging
-
-            // Reset draggable element to its original position
-            dragElement.style.left = originalPosition.x + 'px';
-            dragElement.style.top = originalPosition.y + 'px';
-
-            // Hide the hidden text when the image is not overlapping
-            hiddenText.style.display = 'none';
-        }
-    });
-
-    // Function to check if two elements are overlapping
-    function isOverlapping(element1, element2) {
-        const rect1 = element1.getBoundingClientRect();
-        const rect2 = element2.getBoundingClientRect();
-
-        return !(rect1.right < rect2.left ||
-                 rect1.left > rect2.right ||
-                 rect1.bottom < rect2.top ||
-                 rect1.top > rect2.bottom);
+        newY = containerRect.height * 0.2; // Move to top area
+        break;
+      default:
+        return;
     }
+    
+    e.preventDefault();
+    dragElement.style.left = newX + 'px';
+    dragElement.style.top = newY + 'px';
+    
+    // Show when image overlaps trigger zone
+    if (isOverlapping(dragElement, triggerZone)) {
+      hiddenText.style.display = 'block';
+    } else {
+      hiddenText.style.display = 'none';
+    }
+  });
+
+  function startDragging(clientX, clientY) {
+    isDragging = true;
+    offsetX = clientX - dragElement.offsetLeft;
+    offsetY = clientY - dragElement.offsetTop;
+    dragElement.style.cursor = 'grabbing';
+    // Disable transitions during drag for snappy movement
+    dragElement.style.transition = 'none';
+    document.body.style.userSelect = 'none'; // Prevent text selection
+  }
+
+  function drag(clientX, clientY) {
+    const newLeft = clientX - offsetX;
+    const newTop = clientY - offsetY;
+    
+    // Keep element within viewport bounds
+    const container = document.getElementById('container');
+    const containerRect = container.getBoundingClientRect();
+    const elementRect = dragElement.getBoundingClientRect();
+    
+    const maxLeft = containerRect.width - elementRect.width;
+    const maxTop = containerRect.height - elementRect.height;
+    
+    const constrainedLeft = Math.max(0, Math.min(newLeft, maxLeft));
+    const constrainedTop = Math.max(0, Math.min(newTop, maxTop));
+    
+    dragElement.style.left = constrainedLeft + 'px';
+    dragElement.style.top = constrainedTop + 'px';
+
+    if (isOverlapping(dragElement, triggerZone)) {
+      hiddenText.style.display = 'block';
+    } else {
+      hiddenText.style.display = 'none';
+    }
+  }
+
+  function stopDragging() {
+    if (isDragging) {
+      isDragging = false;
+      dragElement.style.cursor = 'grab';
+      document.body.style.userSelect = ''; // Re-enable text selection
+      
+      // Return to original position with smooth animation
+      setTimeout(() => {
+        dragElement.style.transition = 'left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.15s ease, box-shadow 0.2s ease';
+        dragElement.style.left = originalPosition.x + 'px';
+        dragElement.style.top = originalPosition.y + 'px';
+        
+        setTimeout(() => {
+          dragElement.style.transition = 'transform 0.15s ease, box-shadow 0.2s ease';
+          hiddenText.style.display = 'none';
+        }, 500);
+      }, 100);
+    }
+  }
+
+  function isOverlapping(element1, element2) {
+    const rect1 = element1.getBoundingClientRect();
+    const rect2 = element2.getBoundingClientRect();
+
+    return !(rect1.right < rect2.left ||
+             rect1.left > rect2.right ||
+             rect1.bottom < rect2.top ||
+             rect1.top > rect2.bottom);
+  }
+
+
+  // Handle orientation changes on mobile
+  window.addEventListener('orientationchange', () => {
+    setTimeout(centerImage, 300);
+  });
+
+  // Prevent context menu on long press for mobile
+  dragElement.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+  });
 </script>
 <script>
     (function () {
