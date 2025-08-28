@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Puzzle Page</title>
+  <style>
+    :root {
+      --bg: #0f1226;
+      --panel: #111532;
+      --border: #2b3170;
+      --code-bg: #0a0d22;
+      --text: #e6eaf7;
+      --muted: #8aa1ff;
+      --accent: #79c0ff;
+      --danger: #ff6b6b;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Consolas, "Fira Code", Monaco, "Courier New", monospace;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      display: grid;
+      place-items: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: min(92vw, 900px);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      padding: 28px;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.3px;
+    }
+
+    pre {
+      margin: 0;
+      background: var(--code-bg);
+      padding: 18px 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      line-height: 1.55;
+      font-size: 15px;
+    }
+
+    .footer {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .hidden { display: none; }
+
+    .denied {
+      color: var(--danger);
+      text-align: center;
+      font-size: 18px;
+      padding: 24px;
+    }
+  </style>
+  <noscript>
+    <style>.requires-js { display: block !important; }</style>
+  </noscript>
+  <style>.requires-js { display: none; }</style>
+</head>
+<body>
+  <div id="content" class="container hidden">
+    <h1>Who Am I? Snippet</h1>
+    <pre><code>There is a man. He is the son of my mother’s parents. He is not my brother. Who am I to him?</code></pre>
+    <div class="footer">
+      <div>your next clue is in " CLASSROOM 008 "</div>
+      <div>your next qr_code's password = answer of above Snippet</div>
+    </div>
+  </div>
+
+  <div class="requires-js container">
+    JavaScript is required to enter the password.
+  </div>
+  <script>
+    (function () {
+      var entered = prompt('Enter password');
+      if (entered === '190') {
+        var content = document.getElementById('content');
+        if (content) {
+          content.classList.remove('hidden');
+        }
+      } else {
+        document.body.innerHTML = '<div class="denied">Access denied</div>';
+      }
+    })();
+  </script>
+</body>
+</html>
