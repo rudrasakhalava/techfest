@@ -420,6 +420,18 @@
     e.preventDefault();
   });
 </script>
-
+<script>
+    (function () {
+      var entered = prompt('Enter password');
+      if (entered === 'cousin' || entered === 'Cousin') {
+        var content = document.getElementById('content');
+        if (content) {
+          content.classList.remove('hidden');
+        }
+      } else {
+        document.body.innerHTML = '<div class="denied">Access denied</div>';
+      }
+    })();
+  </script>
 </body>
 </html>
